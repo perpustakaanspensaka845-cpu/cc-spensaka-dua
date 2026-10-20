@@ -21,10 +21,10 @@
         .btn-logout { background-color: #6c757d; color: white; border: none; padding: 8px 14px; font-size: 13px; border-radius: 6px; cursor: pointer; }
         
         /* LOGIN HERO */
-        .login-hero { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; }
-        .login-logo { max-height: 100px; margin-bottom: 12px; }
+        .login-hero { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; text-align: center; }
+        .login-logo { max-height: 110px; margin: 0 auto 12px auto; display: block; object-fit: contain; }
         .login-school-name { font-size: 22px; font-weight: bold; color: #2c3e50; margin: 0; }
-        .login-event-name { font-size: 16px; font-weight: 600; color: #007bff; margin-top: 5px; }
+        .login-event-name { font-size: 15px; font-weight: 600; color: #007bff; margin-top: 8px; line-height: 1.4; }
 
         /* FORM INPUT */
         input[type="text"], input[type="password"] { padding: 12px; width: 85%; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; }
@@ -102,8 +102,8 @@
         <div class="school-header">
             <img id="imgLogo" class="school-logo" src="" alt="Logo">
             <div>
-                <h1 id="txtNamaSekolah" class="school-title"></h1>
-                <div id="txtNamaKegiatan" class="event-title"></div>
+                <h1 id="txtNamaSekolah" class="school-title">SMP NEGERI 1 KANDAT</h1>
+                <div id="txtNamaKegiatan" class="event-title">HARI SANTRI 2026 - SPENSAKA CAKAP (CERDAS, AKTIF, KREATIF, AGAMIS, PRESTASI)</div>
             </div>
         </div>
         <button class="btn-logout" onclick="logout()">🚪 Logout</button>
@@ -113,8 +113,8 @@
     <div class="card" id="loginCard">
         <div class="login-hero">
             <img id="loginImgLogo" class="login-logo" src="" alt="Logo Sekolah" style="display:none;">
-            <h2 id="loginTxtSekolah" class="login-school-name">Memuat Data...</h2>
-            <div id="loginTxtKegiatan" class="login-event-name"></div>
+            <h2 id="loginTxtSekolah" class="login-school-name">SMP NEGERI 1 KANDAT</h2>
+            <div id="loginTxtKegiatan" class="login-event-name">HARI SANTRI 2026 - SPENSAKA CAKAP (CERDAS, AKTIF, KREATIF, AGAMIS, PRESTASI)</div>
         </div>
 
         <p style="color:#6c757d; margin-bottom: 20px;">Masukkan Username dan Password Anda</p>
@@ -175,8 +175,8 @@
         </div>
         <div class="monitor-header">
             <img id="monitorImgLogo" class="monitor-logo" src="" alt="Logo Sekolah">
-            <div id="monitorTxtSekolah" class="monitor-school"></div>
-            <div id="monitorTxtKegiatan" class="monitor-event"></div>
+            <div id="monitorTxtSekolah" class="monitor-school">SMP NEGERI 1 KANDAT</div>
+            <div id="monitorTxtKegiatan" class="monitor-event">HARI SANTRI 2026 - SPENSAKA CAKAP (CERDAS, AKTIF, KREATIF, AGAMIS, PRESTASI)</div>
         </div>
         <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.3); width: 85%;">
         
@@ -203,7 +203,6 @@
     let isPollingActive = false;
     let lastStatusBel = 'OPEN';
 
-    // FUNGSI MENGAKTIFKAN AUDIO BROWSER HP (ANDROID & IOS)
     function unlockMobileAudio() {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (AudioCtx) {
@@ -288,19 +287,29 @@
         fetch(API_URL + '?action=getConfig&_t=' + Date.now())
             .then(res => res.json())
             .then(config => {
-                if(config) {
-                    document.getElementById('loginTxtSekolah').innerText = config.namaSekolah || 'SMP NEGERI 1 KANDAT';
-                    document.getElementById('loginTxtKegiatan').innerText = config.namaKegiatan || 'CERDAS CERMAT';
-                    if(config.urlLogo) {
-                        const img = document.getElementById('loginImgLogo');
-                        img.src = config.urlLogo;
-                        img.style.display = 'inline-block';
+                if (config) {
+                    if (config.namaSekolah) {
+                        document.getElementById('loginTxtSekolah').innerText = config.namaSekolah;
+                        document.getElementById('txtNamaSekolah').innerText = config.namaSekolah;
+                        document.getElementById('monitorTxtSekolah').innerText = config.namaSekolah;
+                    }
+                    if (config.namaKegiatan) {
+                        document.getElementById('loginTxtKegiatan').innerText = config.namaKegiatan;
+                        document.getElementById('txtNamaKegiatan').innerText = config.namaKegiatan;
+                        document.getElementById('monitorTxtKegiatan').innerText = config.namaKegiatan;
+                    }
+                    if (config.urlLogo) {
+                        const imgLogin = document.getElementById('loginImgLogo');
+                        imgLogin.src = config.urlLogo;
+                        imgLogin.style.display = 'block';
+
+                        document.getElementById('imgLogo').src = config.urlLogo;
+                        document.getElementById('monitorImgLogo').src = config.urlLogo;
                     }
                 }
             })
             .catch(err => {
-                document.getElementById('loginTxtSekolah').innerText = 'SMP NEGERI 1 KANDAT';
-                document.getElementById('loginTxtKegiatan').innerText = 'CERDAS CERMAT';
+                console.log('Menggunakan konfigurasi default HTML');
             });
     };
 
@@ -407,7 +416,6 @@
         statusBox.style.backgroundColor = '#d4edda';
         statusBox.style.color = '#155724';
 
-        // BUNYIKAN BEL DI HP PESERTA SECARA INSTAN
         bunyikanSuaraBel(userGroupIndex);
 
         fetch(API_URL, {
